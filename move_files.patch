@@ -1,0 +1,1528 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Jules <jules@example.com>
+Date: Mon, 1 Jan 2024 00:00:00 +0000
+Subject: [PATCH] Move files to root directory
+
+---
+ README.md                                     | 139 +++++++++++++++++++++++++++++
+ assets/js/link-inserter.js                    | 121 +++++++++++++++++++++++++
+ assets/js/sidebar.js                          | 123 +++++++++++++++++++++++++
+ composer.json                                 |  19 ++++
+ cross-site-linker.php                         |  25 +++++
+ includes/Plugin.php                           |  28 ++++++
+ includes/admin/Settings.php                   | 152 +++++++++++++++++++++++++++++++
+ includes/api/Provider.php                     |  70 ++++++++++++++
+ includes/editor/LinkInserter.php              |  18 ++++
+ includes/editor/Sidebar.php                   |  23 +++++
+ cross-site-linker/README.md                   | 139 -------------------------
+ cross-site-linker/assets/js/link-inserter.js  | 121 -------------------------
+ cross-site-linker/assets/js/sidebar.js        | 123 -------------------------
+ cross-site-linker/composer.json               |  19 ----
+ cross-site-linker/cross-site-linker.php       |  25 -----
+ cross-site-linker/includes/Plugin.php         |  28 ------
+ cross-site-linker/includes/admin/Settings.php | 152 -------------------------------
+ cross-site-linker/includes/api/Provider.php   |  70 --------------
+ cross-site-linker/includes/editor/LinkInserter.php |  18 ----
+ cross-site-linker/includes/editor/Sidebar.php |  23 -----
+ 20 files changed, 518 insertions(+), 518 deletions(-)
+ create mode 100644 README.md
+ create mode 100644 assets/js/link-inserter.js
+ create mode 100644 assets/js/sidebar.js
+ create mode 100644 composer.json
+ create mode 100644 cross-site-linker.php
+ create mode 100644 includes/Plugin.php
+ create mode 100644 includes/admin/Settings.php
+ create mode 100644 includes/api/Provider.php
+ create mode 100644 includes/editor/LinkInserter.php
+ create mode 100644 includes/editor/Sidebar.php
+ delete mode 100644 cross-site-linker/README.md
+ delete mode 100644 cross-site-linker/assets/js/link-inserter.js
+ delete mode 100644 cross-site-linker/assets/js/sidebar.js
+ delete mode 100644 cross-site-linker/composer.json
+ delete mode 100644 cross-site-linker/cross-site-linker.php
+ delete mode 100644 cross-site-linker/includes/Plugin.php
+ delete mode 100644 cross-site-linker/includes/admin/Settings.php
+ delete mode 100644 cross-site-linker/includes/api/Provider.php
+ delete mode 100644 cross-site-linker/includes/editor/LinkInserter.php
+ delete mode 100644 cross-site-linker/includes/editor/Sidebar.php
+
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,139 @@
++# Cross-Site Linker
++
++A WordPress plugin to cross-link posts between WordPress sites.
++
++## Why This Plugin?
++
++I built this because I was tired of wasting time.
++
++I have multiple WordPress sites. They're all part of the same ecosystem, but they were siloed. Linking between them was a manual, painful process. I'd have to open a new tab, search for the right post, copy the URL, go back to the original post, highlight the text, and then paste the link. It was a tedious, time-sucking task that I dreaded.
++
++This plugin solves that problem.
++
++It connects all your sites, so you can instantly search for and link to any post on any of your other sites, right from the WordPress editor. No more new tabs, no more copying and pasting, no more wasted time.
++
++If you have more than one WordPress site, this plugin will save you hours of your life. It's that simple.
++
++## Description
++
++Cross-Site Linker is a powerful tool for website owners who manage multiple WordPress sites and want to improve their internal linking strategy. This plugin allows you to seamlessly link posts from one site to another, enhancing user engagement and SEO.
++
++The plugin has two main roles:
++
++*   **Provider:** Exposes a public REST API endpoint to allow other sites to search for posts.
++*   **Consumer:** Provides a user-friendly interface in the Gutenberg editor to find and insert links from other sites.
++
++A single site can act as both a Provider and a Consumer, allowing for a truly interconnected network of websites.
++
++## Features
++
++### Provider Role
++
++*   **Public REST API Endpoint:** `GET /wp-json/crosslinker/v1/posts?q=keyword`
++*   **JSON Response:** Returns a list of matching posts with title, URL, and excerpt.
++*   **WP\_Query Powered:** Uses `WP_Query` to search post titles and excerpts.
++*   **API Key Protection:** Optionally protect the API with an API key.
++
++### Consumer Role (Editor Features)
++
++*   **Gutenberg Sidebar:** A "Cross-Site Suggestions" sidebar in the post editor.
++*   **Automatic Keyword Extraction:** Automatically extracts keywords from the current post title to find relevant suggestions.
++*   **Merge and Rank:** Merges and ranks suggestions from all configured external sites.
++*   **Insert Links:** Easily insert links to external posts into the current post.
++*   **Contextual Link Inserter:** A modal to search for and insert links when you highlight text in the editor.
++
++### Settings Page
++
++*   **Manage Sites:** A user-friendly interface to manage a list of other WordPress sites for cross-linking.
++*   **Test Connection:** A "Test Connection" button for each site to verify connectivity.
++
++### Performance
++
++*   **Caching:** Caches API responses using WordPress transients to improve performance.
++*   **Async Fetches:** Uses asynchronous fetches to get suggestions from all sites without blocking the editor.
++
++## Installation
++
++1.  Download the plugin as a ZIP file.
++2.  In your WordPress admin panel, go to **Plugins > Add New**.
++3.  Click **Upload Plugin** and select the ZIP file.
++4.  Activate the plugin.
++
++## How to Use
++
++### 1. Configure the Plugin
++
++1.  Go to **Settings > Cross-Site Linker** in your WordPress admin panel.
++2.  **API Key (Optional):** If you want to protect your site's API, enter an API key in the "API Key" field. This key will be required for other sites to access your posts.
++3.  **Add Sites:** In the "Sites" section, add the other WordPress sites you want to cross-link with.
++    *   **Site Name:** A friendly name for the site (e.g., "My Tech Blog").
++    *   **Base URL:** The full URL of the site (e.g., `https://my-tech-blog.com`).
++    *   **API Key (Optional):** If the other site has protected its API with an API key, enter it here.
++4.  Click **Save Changes**.
++
++### 2. Provider Role (Exposing Posts)
++
++Once the plugin is activated, your site will automatically expose the `/wp-json/crosslinker/v1/posts` REST API endpoint. Other sites can use this endpoint to search for posts on your site.
++
++If you have set an API key in the settings, other sites will need to provide this key in the `X-API-KEY` header of their requests.
++
++### 3. Consumer Role (Linking to Other Sites)
++
++When you're editing a post in the Gutenberg editor, you'll have two ways to add cross-site links:
++
++#### Cross-Site Suggestions Sidebar
++
++1.  Open the "Cross-Site Suggestions" sidebar on the right side of the editor.
++2.  The sidebar will automatically fetch suggestions from the other sites you've configured based on the title of the post you're currently editing.
++3.  To insert a link, click the "Insert" button next to the suggestion. This will add the link to the end of your post.
++
++#### Contextual Link Inserter
++
++1.  Highlight the text you want to link.
++2.  Click the "Cross-Site Link" button in the toolbar that appears.
++3.  A popover will appear with a search box. Enter a keyword to search for posts on the other sites.
++4.  Click the title of the post you want to link to, and the link will be automatically inserted.
++
++## Author
++
++*   Theafolayan
++
++## License
++
++GPL-2.0-or-later
+diff --git a/assets/js/link-inserter.js b/assets/js/link-inserter.js
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/assets/js/link-inserter.js
+@@ -0,0 +1,121 @@
++const { registerFormatType, toggleFormat } = wp.richText;
++const { RichTextToolbarButton } = wp.editor;
++const { Popover, Button, TextControl, Spinner } = wp.components;
++const { useState } = wp.element;
++const apiFetch = wp.apiFetch;
++
++const CrossSiteLinkInserter = ({ isActive, value, onChange }) => {
++    const [isPopoverVisible, setIsPopoverVisible] = useState(false);
++    const [searchTerm, setSearchTerm] = useState('');
++    const [suggestions, setSuggestions] = useState([]);
++    const [isLoading, setIsLoading] = useState(false);
++
++    const onToggle = () => {
++        setIsPopoverVisible(previousState => !previousState);
++    };
++
++    const searchSuggestions = () => {
++        setIsLoading(true);
++        const { sites, home_url } = crossSiteLinker;
++        const promises = sites
++            .filter(site => site.url !== home_url)
++            .map(site => {
++                let path = `${site.url}/wp-json/crosslinker/v1/posts?q=${searchTerm}`;
++                return apiFetch({
++                    path,
++                    headers: site.api_key ? { 'X-API-KEY': site.api_key } : {},
++                }).then(posts => {
++                    return posts.map(post => ({ ...post, siteName: site.name }));
++                });
++            });
++
++        Promise.all(promises)
++            .then(results => {
++                const newSuggestions = [].concat(...results);
++                setSuggestions(newSuggestions);
++                setIsLoading(false);
++            })
++            .catch(error => {
++                console.error(error);
++                setIsLoading(false);
++                setSuggestions([]);
++                alert('An error occurred while searching for suggestions.');
++            });
++    };
++
++    const insertLink = (url) => {
++        onChange(
++            toggleFormat(value, {
++                type: 'cross-site-linker/link',
++                attributes: { url },
++            })
++        );
++        setIsPopoverVisible(false);
++    };
++
++    return (
++        <>
++            <RichTextToolbarButton
++                icon="admin-links"
++                title="Cross-Site Link"
++                onClick={onToggle}
++                isActive={isActive}
++            />
++            {isPopoverVisible && (
++                <Popover
++                    position="bottom center"
++                    onClose={() => setIsPopoverVisible(false)}
++                >
++                    <div style={{ padding: '16px' }}>
++                        <TextControl
++                            label="Search for a post"
++                            value={searchTerm}
++                            onChange={setSearchTerm}
++                        />
++                        <Button isPrimary onClick={searchSuggestions} disabled={isLoading}>
++                            {isLoading ? 'Searching...' : 'Search'}
++                        </Button>
++                        <hr />
++                        {isLoading && <Spinner />}
++                        {suggestions.length > 0 && (
++                            <ul>
++                                {suggestions.map(suggestion => (
++                                    <li key={suggestion.url}>
++                                        <Button
++                                            isLink
++                                            onClick={() => insertLink(suggestion.url)}
++                                        >
++                                            {suggestion.title}
++                                        </Button>
++                                        <p>{suggestion.excerpt}</p>
++                                        <p>
++                                            <em>{suggestion.siteName}</em>
++                                        </p>
++                                    </li>
++                                ))}
++                            </ul>
++                        )}
++                    </div>
++                </Popover>
++            )}
++        </>
++    );
++};
++
++registerFormatType('cross-site-linker/link', {
++    title: 'Cross-Site Link',
++    tagName: 'a',
++    className: null,
++    attributes: {
++        url: 'href',
++    },
++    edit: CrossSiteLinkInserter,
++});
+diff --git a/assets/js/sidebar.js b/assets/js/sidebar.js
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/assets/js/sidebar.js
+@@ -0,0 +1,123 @@
++const { registerPlugin } = wp.plugins;
++const { PluginSidebar } = wp.editPost;
++const { PanelBody, Button } = wp.components;
++const { withSelect } = wp.data;
++const { Component, Fragment } = wp.element;
++const apiFetch = wp.apiFetch;
++
++class CrossSiteLinkerSidebar extends Component {
++    constructor() {
++        super(...arguments);
++        this.state = {
++            suggestions: [],
++            isLoading: false,
++        };
++    }
++
++    componentDidMount() {
++        this.fetchSuggestions();
++    }
++
++    fetchSuggestions = () => {
++        const { postTitle, postContent } = this.props;
++        const { sites, home_url } = crossSiteLinker;
++
++        this.setState({ isLoading: true });
++
++        const keywords = postTitle.split(' ').slice(0, 5).join(' ');
++        const promises = sites
++            .filter(site => site.url !== home_url)
++            .map(site => {
++                let path = `${site.url}/wp-json/crosslinker/v1/posts?q=${keywords}`;
++                return apiFetch({
++                    path,
++                    headers: site.api_key ? { 'X-API-KEY': site.api_key } : {},
++                }).then(posts => {
++                    return posts.map(post => ({ ...post, siteName: site.name }));
++                });
++            });
++
++        Promise.all(promises)
++            .then(results => {
++                const suggestions = [].concat(...results);
++                this.setState({ suggestions, isLoading: false });
++            })
++            .catch(error => {
++                console.error(error);
++                this.setState({ isLoading: false, suggestions: [] });
++                alert('An error occurred while fetching suggestions.');
++            });
++    };
++
++    insertLink = (url, title) => {
++        const { content, onChange } = this.props;
++        const newContent = content + `\n<a href="${url}">${title}</a>`;
++        onChange(newContent);
++    };
++
++    render() {
++        const { suggestions, isLoading } = this.state;
++
++        return (
++            <Fragment>
++                <PluginSidebar
++                    name="cross-site-linker-sidebar"
++                    title="Cross-Site Suggestions"
++                >
++                    <PanelBody>
++                        <Button isPrimary onClick={this.fetchSuggestions} disabled={isLoading}>
++                            {isLoading ? 'Loading...' : 'Refresh Suggestions'}
++                        </Button>
++                        <hr />
++                        {suggestions.length > 0 ? (
++                            <ul>
++                                {suggestions.map(suggestion => (
++                                    <li key={suggestion.url}>
++                                        <a href={suggestion.url} target="_blank" rel="noopener noreferrer">
++                                            {suggestion.title}
++                                        </a>
++                                        <p>{suggestion.excerpt}</p>
++                                        <p>
++                                            <em>{suggestion.siteName}</em>
++                                        </p>
++                                        <Button
++                                            isSecondary
++                                            onClick={() => this.insertLink(suggestion.url, suggestion.title)}
++                                        >
++                                            Insert
++                                        </Button>
++                                    </li>
++                                ))}
++                            </ul>
++                        ) : (
++                            <p>No suggestions found.</p>
++                        )}
++                    </PanelBody>
++                </PluginSidebar>
++            </Fragment>
++        );
++    }
++}
++
++const applyWithSelect = withSelect(select => {
++    const { getEditedPostAttribute } = select('core/editor');
++    const { editPost } = select('core/editor');
++
++    return {
++        postTitle: getEditedPostAttribute('title'),
++        postContent: getEditedPostAttribute('content'),
++        onChange: editPost,
++    };
++});
++
++registerPlugin('cross-site-linker', {
++    render: applyWithSelect(CrossSiteLinkerSidebar),
++    icon: 'admin-links',
++});
+diff --git a/composer.json b/composer.json
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/composer.json
+@@ -0,0 +1,19 @@
++{
++    "name": "jules/cross-site-linker",
++    "description": "A plugin to cross-link posts between WordPress sites.",
++    "type": "wordpress-plugin",
++    "license": "GPL-2.0-or-later",
++    "authors": [
++        {
++            "name": "Jules"
++        }
++    ],
++    "autoload": {
++        "psr-4": {
++            "CrossSiteLinker\\": "includes/"
++        }
++    },
++    "require": {}
++}
+diff --git a/cross-site-linker.php b/cross-site-linker.php
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/cross-site-linker.php
+@@ -0,0 +1,25 @@
++<?php
++/**
++ * Plugin Name: Cross-Site Linker
++ * Description: A plugin to cross-link posts between WordPress sites.
++ * Version: 1.0.0
++ * Author: Jules
++ */
++
++if (!defined('ABSPATH')) {
++    exit;
++}
++
++define('CROSS_SITE_LINKER_PATH', plugin_dir_path(__FILE__));
++define('CROSS_SITE_LINKER_URL', plugin_dir_url(__FILE__));
++
++// Manually include the files
++require_once CROSS_SITE_LINKER_PATH . 'includes/Plugin.php';
++require_once CROSS_SITE_LINKER_PATH . 'includes/api/Provider.php';
++require_once CROSS_SITE_LINKER_PATH . 'includes/admin/Settings.php';
++require_once CROSS_SITE_LINKER_PATH . 'includes/editor/Sidebar.php';
++require_once CROSS_SITE_LINKER_PATH . 'includes/editor/LinkInserter.php';
++
++
++// Initialize the plugin
++\CrossSiteLinker\Plugin::instance();
+diff --git a/includes/Plugin.php b/includes/Plugin.php
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/includes/Plugin.php
+@@ -0,0 +1,28 @@
++<?php
++
++namespace CrossSiteLinker;
++
++class Plugin
++{
++    private static $instance;
++
++    public static function instance()
++    {
++        if (is_null(self::$instance)) {
++            self::$instance = new self();
++        }
++        return self::$instance;
++    }
++
++    private function __construct()
++    {
++        add_action('plugins_loaded', [$this, 'init']);
++    }
++
++    public function init()
++    {
++        // Load other components
++        new Api\Provider();
++        new Admin\Settings();
++        new Editor\Sidebar();
++        new Editor\LinkInserter();
++    }
++}
+diff --git a/includes/admin/Settings.php b/includes/admin/Settings.php
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/includes/admin/Settings.php
+@@ -0,0 +1,152 @@
++<?php
++
++namespace CrossSiteLinker\Admin;
++
++class Settings
++{
++    public function __construct()
++    {
++        add_action('admin_menu', [$this, 'add_menu_page']);
++        add_action('admin_init', [$this, 'register_settings']);
++    }
++
++    public function add_menu_page()
++    {
++        add_options_page(
++            'Cross-Site Linker',
++            'Cross-Site Linker',
++            'manage_options',
++            'cross-site-linker',
++            [$this, 'render_settings_page']
++        );
++    }
++
++    public function register_settings()
++    {
++        register_setting('cross_site_linker_settings', 'cross_site_linker_sites');
++        register_setting('cross_site_linker_settings', 'cross_site_linker_api_key');
++
++        add_settings_section(
++            'cross_site_linker_api_key_section',
++            'API Key Settings',
++            null,
++            'cross-site-linker'
++        );
++
++        add_settings_field(
++            'cross_site_linker_api_key',
++            'API Key',
++            [$this, 'render_api_key_field'],
++            'cross-site-linker',
++            'cross_site_linker_api_key_section'
++        );
++
++        add_settings_section(
++            'cross_site_linker_sites_section',
++            'Sites',
++            null,
++            'cross-site-linker'
++        );
++
++        add_settings_field(
++            'cross_site_linker_sites',
++            'Sites',
++            [$this, 'render_sites_field'],
++            'cross-site-linker',
++            'cross_site_linker_sites_section'
++        );
++    }
++
++    public function render_settings_page()
++    {
++        ?>
++        <div class="wrap">
++            <h1>Cross-Site Linker Settings</h1>
++            <form action="options.php" method="post">
++                <?php
++                settings_fields('cross_site_linker_settings');
++                do_settings_sections('cross-site-linker');
++                submit_button();
++                ?>
++            </form>
++        </div>
++        <?php
++    }
++
++    public function render_api_key_field()
++    {
++        $api_key = get_option('cross_site_linker_api_key');
++        echo '<input type="text" name="cross_site_linker_api_key" value="' . esc_attr($api_key) . '" size="40" />';
++        echo '<p class="description">If you want to protect your API, enter an API key here.</p>';
++    }
++
++    public function render_sites_field()
++    {
++        $sites = get_option('cross_site_linker_sites', []);
++        ?>
++        <div id="cross-site-linker-sites-wrapper">
++            <?php if (!empty($sites)) : ?>
++                <?php foreach ($sites as $index => $site) : ?>
++                    <div class="site-fields">
++                        <input type="text" name="cross_site_linker_sites[<?php echo $index; ?>][name]" value="<?php echo esc_attr($site['name']); ?>" placeholder="Site Name" />
++                        <input type="text" name="cross_site_linker_sites[<?php echo $index; ?>][url]" value="<?php echo esc_attr($site['url']); ?>" placeholder="Site URL" />
++                        <input type="text" name="cross_site_linker_sites[<?php echo $index; ?>][api_key]" value="<?php echo esc_attr($site['api_key']); ?>" placeholder="API Key (optional)" />
++                        <button type="button" class="button remove-site">Remove</button>
++                        <button type="button" class="button test-connection">Test Connection</button>
++                    </div>
++                <?php endforeach; ?>
++            <?php endif; ?>
++        </div>
++        <button type="button" class="button" id="add-site">Add Site</button>
++
++        <script>
++            jQuery(document).ready(function($) {
++                let siteIndex = <?php echo count($sites); ?>;
++
++                $('#add-site').on('click', function() {
++                    let newSite = `
++                        <div class="site-fields">
++                            <input type="text" name="cross_site_linker_sites[${siteIndex}][name]" placeholder="Site Name" />
++                            <input type="text" name="cross_site_linker_sites[${siteIndex}][url]" placeholder="Site URL" />
++                            <input type="text" name="cross_site_linker_sites[${siteIndex}][api_key]" placeholder="API Key (optional)" />
++                            <button type="button" class="button remove-site">Remove</button>
++                            <button type="button" class="button test-connection">Test Connection</button>
++                        </div>
++                    `;
++                    $('#cross-site-linker-sites-wrapper').append(newSite);
++                    siteIndex++;
++                });
++
++                $('#cross-site-linker-sites-wrapper').on('click', '.remove-site', function() {
++                    $(this).closest('.site-fields').remove();
++                });
++
++                $('#cross-site-linker-sites-wrapper').on('click', '.test-connection', function() {
++                    let siteUrl = $(this).siblings('input[name$="[url]"]').val();
++                    let apiKey = $(this).siblings('input[name$="[api_key]"]').val();
++                    let button = $(this);
++
++                    button.text('Testing...').prop('disabled', true);
++
++                    $.ajax({
++                        url: siteUrl + '/wp-json/crosslinker/v1/posts?q=test',
++                        beforeSend: function(xhr) {
++                            if (apiKey) {
++                                xhr.setRequestHeader('X-API-KEY', apiKey);
++                            }
++                        },
++                        success: function() {
++                            alert('Connection successful!');
++                            button.text('Test Connection').prop('disabled', false);
++                        },
++                        error: function() {
++                            alert('Connection failed!');
++                            button.text('Test Connection').prop('disabled', false);
++                        }
++                    });
++                });
++            });
++        </script>
++        <?php
++    }
++}
+diff --git a/includes/api/Provider.php b/includes/api/Provider.php
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/includes/api/Provider.php
+@@ -0,0 +1,70 @@
++<?php
++
++namespace CrossSiteLinker\Api;
++
++class Provider
++{
++    public function __construct()
++    {
++        add_action('rest_api_init', [$this, 'register_routes']);
++    }
++
++    public function register_routes()
++    {
++        register_rest_route('crosslinker/v1', '/posts', [
++            'methods' => 'GET',
++            'callback' => [$this, 'get_posts'],
++            'permission_callback' => [$this, 'check_permission'],
++        ]);
++    }
++
++    public function get_posts($request)
++    {
++        $keyword = $request->get_param('q');
++
++        if (empty($keyword)) {
++            return new \WP_Error('missing_keyword', 'Missing keyword', ['status' => 400]);
++        }
++
++        $transient_key = 'csl_posts_' . sanitize_title_with_dashes($keyword);
++        $cached_posts = get_transient($transient_key);
++
++        if (false !== $cached_posts) {
++            return new \WP_REST_Response($cached_posts, 200);
++        }
++
++        $args = [
++            'post_type' => 'post',
++            'post_status' => 'publish',
++            'posts_per_page' => 10,
++            's' => $keyword,
++        ];
++
++        $query = new \WP_Query($args);
++
++        $posts = [];
++        foreach ($query->posts as $post) {
++            $posts[] = [
++                'title' => $post->post_title,
++                'url' => get_permalink($post->ID),
++                'excerpt' => get_the_excerpt($post->ID),
++            ];
++        }
++
++        set_transient($transient_key, $posts, 30 * MINUTE_IN_SECONDS);
++
++        return new \WP_REST_Response($posts, 200);
++    }
++
++    public function check_permission($request)
++    {
++        $api_key = get_option('cross_site_linker_api_key');
++
++        if (empty($api_key)) {
++            return true;
++        }
++
++        $request_api_key = $request->get_header('X-API-KEY');
++
++        if ($api_key === $request_api_key) {
++            return true;
++        }
++
++        return new \WP_Error('invalid_api_key', 'Invalid API key', ['status' => 401]);
++    }
++}
+diff --git a/includes/editor/LinkInserter.php b/includes/editor/LinkInserter.php
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/includes/editor/LinkInserter.php
+@@ -0,0 +1,18 @@
++<?php
++
++namespace CrossSiteLinker\Editor;
++
++class LinkInserter
++{
++    public function __construct()
++    {
++        add_action('enqueue_block_editor_assets', [$this, 'enqueue_assets']);
++    }
++
++    public function enqueue_assets()
++    {
++        wp_enqueue_script(
++            'cross-site-linker-link-inserter',
++            CROSS_SITE_LINKER_URL . 'assets/js/link-inserter.js',
++            ['wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data', 'wp-api-fetch', 'wp-rich-text'],
++            '1.0.0',
++            true
++        );
++    }
++}
+diff --git a/includes/editor/Sidebar.php b/includes/editor/Sidebar.php
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/includes/editor/Sidebar.php
+@@ -0,0 +1,23 @@
++<?php
++
++namespace CrossSiteLinker\Editor;
++
++class Sidebar
++{
++    public function __construct()
++    {
++        add_action('enqueue_block_editor_assets', [$this, 'enqueue_assets']);
++    }
++
++    public function enqueue_assets()
++    {
++        wp_enqueue_script(
++            'cross-site-linker-sidebar',
++            CROSS_SITE_LINKER_URL . 'assets/js/sidebar.js',
++            ['wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data', 'wp-api-fetch'],
++            '1.0.0',
++            true
++        );
++
++        wp_localize_script('cross-site-linker-sidebar', 'crossSiteLinker', [
++            'sites' => get_option('cross_site_linker_sites', []),
++            'home_url' => get_home_url(),
++        ]);
++    }
++}
+diff --git a/cross-site-linker/README.md b/cross-site-linker/README.md
+deleted file mode 100644
+index 0000000..0000000
+--- a/cross-site-linker/README.md
++++ /dev/null
+@@ -1,139 +0,0 @@
+-# Cross-Site Linker
+-
+-A WordPress plugin to cross-link posts between WordPress sites.
+-
+-## Why This Plugin?
+-
+-I built this because I was tired of wasting time.
+-
+-I have multiple WordPress sites. They're all part of the same ecosystem, but they were siloed. Linking between them was a manual, painful process. I'd have to open a new tab, search for the right post, copy the URL, go back to the original post, highlight the text, and then paste the link. It was a tedious, time-sucking task that I dreaded.
+-
+-This plugin solves that problem.
+-
+-It connects all your sites, so you can instantly search for and link to any post on any of your other sites, right from the WordPress editor. No more new tabs, no more copying and pasting, no more wasted time.
+-
+-If you have more than one WordPress site, this plugin will save you hours of your life. It's that simple.
+-
+-## Description
+-
+-Cross-Site Linker is a powerful tool for website owners who manage multiple WordPress sites and want to improve their internal linking strategy. This plugin allows you to seamlessly link posts from one site to another, enhancing user engagement and SEO.
+-
+-The plugin has two main roles:
+-
+-*   **Provider:** Exposes a public REST API endpoint to allow other sites to search for posts.
+-*   **Consumer:** Provides a user-friendly interface in the Gutenberg editor to find and insert links from other sites.
+-
+-A single site can act as both a Provider and a Consumer, allowing for a truly interconnected network of websites.
+-
+-## Features
+-
+-### Provider Role
+-
+-*   **Public REST API Endpoint:** `GET /wp-json/crosslinker/v1/posts?q=keyword`
+-*   **JSON Response:** Returns a list of matching posts with title, URL, and excerpt.
+-*   **WP\_Query Powered:** Uses `WP_Query` to search post titles and excerpts.
+-*   **API Key Protection:** Optionally protect the API with an API key.
+-
+-### Consumer Role (Editor Features)
+-
+-*   **Gutenberg Sidebar:** A "Cross-Site Suggestions" sidebar in the post editor.
+-*   **Automatic Keyword Extraction:** Automatically extracts keywords from the current post title to find relevant suggestions.
+-*   **Merge and Rank:** Merges and ranks suggestions from all configured external sites.
+-*   **Insert Links:** Easily insert links to external posts into the current post.
+-*   **Contextual Link Inserter:** A modal to search for and insert links when you highlight text in the editor.
+-
+-### Settings Page
+-
+-*   **Manage Sites:** A user-friendly interface to manage a list of other WordPress sites for cross-linking.
+-*   **Test Connection:** A "Test Connection" button for each site to verify connectivity.
+-
+-### Performance
+-
+-*   **Caching:** Caches API responses using WordPress transients to improve performance.
+-*   **Async Fetches:** Uses asynchronous fetches to get suggestions from all sites without blocking the editor.
+-
+-## Installation
+-
+-1.  Download the plugin as a ZIP file.
+-2.  In your WordPress admin panel, go to **Plugins > Add New**.
+-3.  Click **Upload Plugin** and select the ZIP file.
+-4.  Activate the plugin.
+-
+-## How to Use
+-
+-### 1. Configure the Plugin
+-
+-1.  Go to **Settings > Cross-Site Linker** in your WordPress admin panel.
+-2.  **API Key (Optional):** If you want to protect your site's API, enter an API key in the "API Key" field. This key will be required for other sites to access your posts.
+-3.  **Add Sites:** In the "Sites" section, add the other WordPress sites you want to cross-link with.
+-    *   **Site Name:** A friendly name for the site (e.g., "My Tech Blog").
+-    *   **Base URL:** The full URL of the site (e.g., `https://my-tech-blog.com`).
+-    *   **API Key (Optional):** If the other site has protected its API with an API key, enter it here.
+-4.  Click **Save Changes**.
+-
+-### 2. Provider Role (Exposing Posts)
+-
+-Once the plugin is activated, your site will automatically expose the `/wp-json/crosslinker/v1/posts` REST API endpoint. Other sites can use this endpoint to search for posts on your site.
+-
+-If you have set an API key in the settings, other sites will need to provide this key in the `X-API-KEY` header of their requests.
+-
+-### 3. Consumer Role (Linking to Other Sites)
+-
+-When you're editing a post in the Gutenberg editor, you'll have two ways to add cross-site links:
+-
+-#### Cross-Site Suggestions Sidebar
+-
+-1.  Open the "Cross-Site Suggestions" sidebar on the right side of the editor.
+-2.  The sidebar will automatically fetch suggestions from the other sites you'veconfigured based on the title of the post you're currently editing.
+-3.  To insert a link, click the "Insert" button next to the suggestion. This will add the link to the end of your post.
+-
+-#### Contextual Link Inserter
+-
+-1.  Highlight the text you want to link.
+-2.  Click the "Cross-Site Link" button in the toolbar that appears.
+-3.  A popover will appear with a search box. Enter a keyword to search for posts on the other sites.
+-4.  Click the title of the post you want to link to, and the link will be automatically inserted.
+-
+-## Author
+-
+-*   Theafolayan
+-
+-## License
+-
+-GPL-2.0-or-later
+diff --git a/cross-site-linker/assets/js/link-inserter.js b/cross-site-linker/assets/js/link-inserter.js
+deleted file mode 100644
+index 0000000..0000000
+--- a/cross-site-linker/assets/js/link-inserter.js
++++ /dev/null
+@@ -1,121 +0,0 @@
+-const { registerFormatType, toggleFormat } = wp.richText;
+-const { RichTextToolbarButton } = wp.editor;
+-const { Popover, Button, TextControl, Spinner } = wp.components;
+-const { useState } = wp.element;
+-const apiFetch = wp.apiFetch;
+-
+-const CrossSiteLinkInserter = ({ isActive, value, onChange }) => {
+-    const [isPopoverVisible, setIsPopoverVisible] = useState(false);
+-    const [searchTerm, setSearchTerm] = useState('');
+-    const [suggestions, setSuggestions] = useState([]);
+-    const [isLoading, setIsLoading] = useState(false);
+-
+-    const onToggle = () => {
+-        setIsPopoverVisible(previousState => !previousState);
+-    };
+-
+-    const searchSuggestions = () => {
+-        setIsLoading(true);
+-        const { sites, home_url } = crossSiteLinker;
+-        const promises = sites
+-            .filter(site => site.url !== home_url)
+-            .map(site => {
+-                let path = `${site.url}/wp-json/crosslinker/v1/posts?q=${searchTerm}`;
+-                return apiFetch({
+-                    path,
+-                    headers: site.api_key ? { 'X-API-KEY': site.api_key } : {},
+-                }).then(posts => {
+-                    return posts.map(post => ({ ...post, siteName: site.name }));
+-                });
+-            });
+-
+-        Promise.all(promises)
+-            .then(results => {
+-                const newSuggestions = [].concat(...results);
+-                setSuggestions(newSuggestions);
+-                setIsLoading(false);
+-            })
+-            .catch(error => {
+-                console.error(error);
+-                setIsLoading(false);
+-                setSuggestions([]);
+-                alert('An error occurred while searching for suggestions.');
+-            });
+-    };
+-
+-    const insertLink = (url) => {
+-        onChange(
+-            toggleFormat(value, {
+-                type: 'cross-site-linker/link',
+-                attributes: { url },
+-            })
+-        );
+-        setIsPopoverVisible(false);
+-    };
+-
+-    return (
+-        <>
+-            <RichTextToolbarButton
+-                icon="admin-links"
+-                title="Cross-Site Link"
+-                onClick={onToggle}
+-                isActive={isActive}
+-            />
+-            {isPopoverVisible && (
+-                <Popover
+-                    position="bottom center"
+-                    onClose={() => setIsPopoverVisible(false)}
+-                >
+-                    <div style={{ padding: '16px' }}>
+-                        <TextControl
+-                            label="Search for a post"
+-                            value={searchTerm}
+-                            onChange={setSearchTerm}
+-                        />
+-                        <Button isPrimary onClick={searchSuggestions} disabled={isLoading}>
+-                            {isLoading ? 'Searching...' : 'Search'}
+-                        </Button>
+-                        <hr />
+-                        {isLoading && <Spinner />}
+-                        {suggestions.length > 0 && (
+-                            <ul>
+-                                {suggestions.map(suggestion => (
+-                                    <li key={suggestion.url}>
+-                                        <Button
+-                                            isLink
+-                                            onClick={() => insertLink(suggestion.url)}
+-                                        >
+-                                            {suggestion.title}
+-                                        </Button>
+-                                        <p>{suggestion.excerpt}</p>
+-                                        <p>
+-                                            <em>{suggestion.siteName}</em>
+-                                        </p>
+-                                    </li>
+-                                ))}
+-                            </ul>
+-                        )}
+-                    </div>
+-                </Popover>
+-            )}
+-        </>
+-    );
+-};
+-
+-registerFormatType('cross-site-linker/link', {
+-    title: 'Cross-Site Link',
+-    tagName: 'a',
+-    className: null,
+-    attributes: {
+-        url: 'href',
+-    },
+-    edit: CrossSiteLinkInserter,
+-});
+diff --git a/cross-site-linker/assets/js/sidebar.js b/cross-site-linker/assets/js/sidebar.js
+deleted file mode 100644
+index 0000000..0000000
+--- a/cross-site-linker/assets/js/sidebar.js
++++ /dev/null
+@@ -1,123 +0,0 @@
+-const { registerPlugin } = wp.plugins;
+-const { PluginSidebar } = wp.editPost;
+-const { PanelBody, Button } = wp.components;
+-const { withSelect } = wp.data;
+-const { Component, Fragment } = wp.element;
+-const apiFetch = wp.apiFetch;
+-
+-class CrossSiteLinkerSidebar extends Component {
+-    constructor() {
+-        super(...arguments);
+-        this.state = {
+-            suggestions: [],
+-            isLoading: false,
+-        };
+-    }
+-
+-    componentDidMount() {
+-        this.fetchSuggestions();
+-    }
+-
+-    fetchSuggestions = () => {
+-        const { postTitle, postContent } = this.props;
+-        const { sites, home_url } = crossSiteLinker;
+-
+-        this.setState({ isLoading: true });
+-
+-        const keywords = postTitle.split(' ').slice(0, 5).join(' ');
+-        const promises = sites
+-            .filter(site => site.url !== home_url)
+-            .map(site => {
+-                let path = `${site.url}/wp-json/crosslinker/v1/posts?q=${keywords}`;
+-                return apiFetch({
+-                    path,
+-                    headers: site.api_key ? { 'X-API-KEY': site.api_key } : {},
+-                }).then(posts => {
+-                    return posts.map(post => ({ ...post, siteName: site.name }));
+-                });
+-            });
+-
+-        Promise.all(promises)
+-            .then(results => {
+-                const suggestions = [].concat(...results);
+-                this.setState({ suggestions, isLoading: false });
+-            })
+-            .catch(error => {
+-                console.error(error);
+-                this.setState({ isLoading: false, suggestions: [] });
+-                alert('An error occurred while fetching suggestions.');
+-            });
+-    };
+-
+-    insertLink = (url, title) => {
+-        const { content, onChange } = this.props;
+-        const newContent = content + `\n<a href="${url}">${title}</a>`;
+-        onChange(newContent);
+-    };
+-
+-    render() {
+-        const { suggestions, isLoading } = this.state;
+-
+-        return (
+-            <Fragment>
+-                <PluginSidebar
+-                    name="cross-site-linker-sidebar"
+-                    title="Cross-Site Suggestions"
+-                >
+-                    <PanelBody>
+-                        <Button isPrimary onClick={this.fetchSuggestions} disabled={isLoading}>
+-                            {isLoading ? 'Loading...' : 'Refresh Suggestions'}
+-                        </Button>
+-                        <hr />
+-                        {suggestions.length > 0 ? (
+-                            <ul>
+-                                {suggestions.map(suggestion => (
+-                                    <li key={suggestion.url}>
+-                                        <a href={suggestion.url} target="_blank" rel="noopener noreferrer">
+-                                            {suggestion.title}
+-                                        </a>
+-                                        <p>{suggestion.excerpt}</p>
+-                                        <p>
+-                                            <em>{suggestion.siteName}</em>
+-                                        </p>
+-                                        <Button
+-                                            isSecondary
+-                                            onClick={() => this.insertLink(suggestion.url, suggestion.title)}
+-                                        >
+-                                            Insert
+-                                        </Button>
+-                                    </li>
+-                                ))}
+-                            </ul>
+-                        ) : (
+-                            <p>No suggestions found.</p>
+-                        )}
+-                    </PanelBody>
+-                </PluginSidebar>
+-            </Fragment>
+-        );
+-    }
+-}
+-
+-const applyWithSelect = withSelect(select => {
+-    const { getEditedPostAttribute } = select('core/editor');
+-    const { editPost } = select('core/editor');
+-
+-    return {
+-        postTitle: getEditedPostAttribute('title'),
+-        postContent: getEditedPostAttribute('content'),
+-        onChange: editPost,
+-    };
+-});
+-
+-registerPlugin('cross-site-linker', {
+-    render: applyWithSelect(CrossSiteLinkerSidebar),
+-    icon: 'admin-links',
+-});
+diff --git a/cross-site-linker/composer.json b/cross-site-linker/composer.json
+deleted file mode 100644
+index 0000000..0000000
+--- a/cross-site-linker/composer.json
++++ /dev/null
+@@ -1,19 +0,0 @@
+-{
+-    "name": "jules/cross-site-linker",
+-    "description": "A plugin to cross-link posts between WordPress sites.",
+-    "type": "wordpress-plugin",
+-    "license": "GPL-2.0-or-later",
+-    "authors": [
+-        {
+-            "name": "Jules"
+-        }
+-    ],
+-    "autoload": {
+-        "psr-4": {
+-            "CrossSiteLinker\\": "includes/"
+-        }
+-    },
+-    "require": {}
+-}
+diff --git a/cross-site-linker/cross-site-linker.php b/cross-site-linker/cross-site-linker.php
+deleted file mode 100644
+index 0000000..0000000
+--- a/cross-site-linker/cross-site-linker.php
++++ /dev/null
+@@ -1,25 +0,0 @@
+-<?php
+-/**
+- * Plugin Name: Cross-Site Linker
+- * Description: A plugin to cross-link posts between WordPress sites.
+- * Version: 1.0.0
+- * Author: Jules
+- */
+-
+-if (!defined('ABSPATH')) {
+-    exit;
+-}
+-
+-define('CROSS_SITE_LINKER_PATH', plugin_dir_path(__FILE__));
+-define('CROSS_SITE_LINKER_URL', plugin_dir_url(__FILE__));
+-
+-// Manually include the files
+-require_once CROSS_SITE_LINKER_PATH . 'includes/Plugin.php';
+-require_once CROSS_SITE_LINKER_PATH . 'includes/api/Provider.php';
+-require_once CROSS_SITE_LINKER_PATH . 'includes/admin/Settings.php';
+-require_once CROSS_SITE_LINKER_PATH . 'includes/editor/Sidebar.php';
+-require_once CROSS_SITE_LINKER_PATH . 'includes/editor/LinkInserter.php';
+-
+-
+-// Initialize the plugin
+-\CrossSiteLinker\Plugin::instance();
+diff --git a/cross-site-linker/includes/Plugin.php b/cross-site-linker/includes/Plugin.php
+deleted file mode 100644
+index 0000000..0000000
+--- a/cross-site-linker/includes/Plugin.php
++++ /dev/null
+@@ -1,28 +0,0 @@
+-<?php
+-
+-namespace CrossSiteLinker;
+-
+-class Plugin
+-{
+-    private static $instance;
+-
+-    public static function instance()
+-    {
+-        if (is_null(self::$instance)) {
+-            self::$instance = new self();
+-        }
+-        return self::$instance;
+-    }
+-
+-    private function __construct()
+-    {
+-        add_action('plugins_loaded', [$this, 'init']);
+-    }
+-
+-    public function init()
+-    {
+-        // Load other components
+-        new Api\Provider();
+-        new Admin\Settings();
+-        new Editor\Sidebar();
+-        new Editor\LinkInserter();
+-    }
+-}
+diff --git a/cross-site-linker/includes/admin/Settings.php b/cross-site-linker/includes/admin/Settings.php
+deleted file mode 100644
+index 0000000..0000000
+--- a/cross-site-linker/includes/admin/Settings.php
++++ /dev/null
+@@ -1,152 +0,0 @@
+-<?php
+-
+-namespace CrossSiteLinker\Admin;
+-
+-class Settings
+-{
+-    public function __construct()
+-    {
+-        add_action('admin_menu', [$this, 'add_menu_page']);
+-        add_action('admin_init', [$this, 'register_settings']);
+-    }
+-
+-    public function add_menu_page()
+-    {
+-        add_options_page(
+-            'Cross-Site Linker',
+-            'Cross-Site Linker',
+-            'manage_options',
+-            'cross-site-linker',
+-            [$this, 'render_settings_page']
+-        );
+-    }
+-
+-    public function register_settings()
+-    {
+-        register_setting('cross_site_linker_settings', 'cross_site_linker_sites');
+-        register_setting('cross_site_linker_settings', 'cross_site_linker_api_key');
+-
+-        add_settings_section(
+-            'cross_site_linker_api_key_section',
+-            'API Key Settings',
+-            null,
+-            'cross-site-linker'
+-        );
+-
+-        add_settings_field(
+-            'cross_site_linker_api_key',
+-            'API Key',
+-            [$this, 'render_api_key_field'],
+-            'cross-site-linker',
+-            'cross_site_linker_api_key_section'
+-        );
+-
+-        add_settings_section(
+-            'cross_site_linker_sites_section',
+-            'Sites',
+-            null,
+-            'cross-site-linker'
+-        );
+-
+-        add_settings_field(
+-            'cross_site_linker_sites',
+-            'Sites',
+-            [$this, 'render_sites_field'],
+-            'cross-site-linker',
+-            'cross_site_linker_sites_section'
+-        );
+-    }
+-
+-    public function render_settings_page()
+-    {
+-        ?>
+-        <div class="wrap">
+-            <h1>Cross-Site Linker Settings</h1>
+-            <form action="options.php" method="post">
+-                <?php
+-                settings_fields('cross_site_linker_settings');
+-                do_settings_sections('cross-site-linker');
+-                submit_button();
+-                ?>
+-            </form>
+-        </div>
+-        <?php
+-    }
+-
+-    public function render_api_key_field()
+-    {
+-        $api_key = get_option('cross_site_linker_api_key');
+-        echo '<input type="text" name="cross_site_linker_api_key" value="' . esc_attr($api_key) . '" size="40" />';
+-        echo '<p class="description">If you want to protect your API, enter an API key here.</p>';
+-    }
+-
+-    public function render_sites_field()
+-    {
+-        $sites = get_option('cross_site_linker_sites', []);
+-        ?>
+-        <div id="cross-site-linker-sites-wrapper">
+-            <?php if (!empty($sites)) : ?>
+-                <?php foreach ($sites as $index => $site) : ?>
+-                    <div class="site-fields">
+-                        <input type="text" name="cross_site_linker_sites[<?php echo $index; ?>][name]" value="<?php echo esc_attr($site['name']); ?>" placeholder="Site Name" />
+-                        <input type="text" name="cross_site_linker_sites[<?php echo $index; ?>][url]" value="<?php echo esc_attr($site['url']); ?>" placeholder="Site URL" />
+-                        <input type="text" name="cross_site_linker_sites[<?php echo $index; ?>][api_key]" value="<?php echo esc_attr($site['api_key']); ?>" placeholder="API Key (optional)" />
+-                        <button type="button" class="button remove-site">Remove</button>
+-                        <button type="button" class="button test-connection">Test Connection</button>
+-                    </div>
+-                <?php endforeach; ?>
+-            <?php endif; ?>
+-        </div>
+-        <button type="button" class="button" id="add-site">Add Site</button>
+-
+-        <script>
+-            jQuery(document).ready(function($) {
+-                let siteIndex = <?php echo count($sites); ?>;
+-
+-                $('#add-site').on('click', function() {
+-                    let newSite = `
+-                        <div class="site-fields">
+-                            <input type="text" name="cross_site_linker_sites[${siteIndex}][name]" placeholder="Site Name" />
+-                            <input type="text" name="cross_site_linker_sites[${siteIndex}][url]" placeholder="Site URL" />
+-                            <input type="text" name="cross_site_linker_sites[${siteIndex}][api_key]" placeholder="API Key (optional)" />
+-                            <button type="button" class="button remove-site">Remove</button>
+-                            <button type="button" class="button test-connection">Test Connection</button>
+-                        </div>
+-                    `;
+-                    $('#cross-site-linker-sites-wrapper').append(newSite);
+-                    siteIndex++;
+-                });
+-
+-                $('#cross-site-linker-sites-wrapper').on('click', '.remove-site', function() {
+-                    $(this).closest('.site-fields').remove();
+-                });
+-
+-                $('#cross-site-linker-sites-wrapper').on('click', '.test-connection', function() {
+-                    let siteUrl = $(this).siblings('input[name$="[url]"]').val();
+-                    let apiKey = $(this).siblings('input[name$="[api_key]"]').val();
+-                    let button = $(this);
+-
+-                    button.text('Testing...').prop('disabled', true);
+-
+-                    $.ajax({
+-                        url: siteUrl + '/wp-json/crosslinker/v1/posts?q=test',
+-                        beforeSend: function(xhr) {
+-                            if (apiKey) {
+-                                xhr.setRequestHeader('X-API-KEY', apiKey);
+-                            }
+-                        },
+-                        success: function() {
+-                            alert('Connection successful!');
+-                            button.text('Test Connection').prop('disabled', false);
+-                        },
+-                        error: function() {
+-                            alert('Connection failed!');
+-                            button.text('Test Connection').prop('disabled', false);
+-                        }
+-                    });
+-                });
+-            });
+-        </script>
+-        <?php
+-    }
+-}
+diff --git a/cross-site-linker/includes/api/Provider.php b/cross-site-linker/includes/api/Provider.php
+deleted file mode 100644
+index 0000000..0000000
+--- a/cross-site-linker/includes/api/Provider.php
++++ /dev/null
+@@ -1,70 +0,0 @@
+-<?php
+-
+-namespace CrossSiteLinker\Api;
+-
+-class Provider
+-{
+-    public function __construct()
+-    {
+-        add_action('rest_api_init', [$this, 'register_routes']);
+-    }
+-
+-    public function register_routes()
+-    {
+-        register_rest_route('crosslinker/v1', '/posts', [
+-            'methods' => 'GET',
+-            'callback' => [$this, 'get_posts'],
+-            'permission_callback' => [$this, 'check_permission'],
+-        ]);
+-    }
+-
+-    public function get_posts($request)
+-    {
+-        $keyword = $request->get_param('q');
+-
+-        if (empty($keyword)) {
+-            return new \WP_Error('missing_keyword', 'Missing keyword', ['status' => 400]);
+-        }
+-
+-        $transient_key = 'csl_posts_' . sanitize_title_with_dashes($keyword);
+-        $cached_posts = get_transient($transient_key);
+-
+-        if (false !== $cached_posts) {
+-            return new \WP_REST_Response($cached_posts, 200);
+-        }
+-
+-        $args = [
+-            'post_type' => 'post',
+-            'post_status' => 'publish',
+-            'posts_per_page' => 10,
+-            's' => $keyword,
+-        ];
+-
+-        $query = new \WP_Query($args);
+-
+-        $posts = [];
+-        foreach ($query->posts as $post) {
+-            $posts[] = [
+-                'title' => $post->post_title,
+-                'url' => get_permalink($post->ID),
+-                'excerpt' => get_the_excerpt($post->ID),
+-            ];
+-        }
+-
+-        set_transient($transient_key, $posts, 30 * MINUTE_IN_SECONDS);
+-
+-        return new \WP_REST_Response($posts, 200);
+-    }
+-
+-    public function check_permission($request)
+-    {
+-        $api_key = get_option('cross_site_linker_api_key');
+-
+-        if (empty($api_key)) {
+-            return true;
+-        }
+-
+-        $request_api_key = $request->get_header('X-API-KEY');
+-
+-        if ($api_key === $request_api_key) {
+-            return true;
+-        }
+-
+-        return new \WP_Error('invalid_api_key', 'Invalid API key', ['status' => 401]);
+-    }
+-}
+diff --git a/cross-site-linker/includes/editor/LinkInserter.php b/cross-site-linker/includes/editor/LinkInserter.php
+deleted file mode 100644
+index 0000000..0000000
+--- a/cross-site-linker/includes/editor/LinkInserter.php
++++ /dev/null
+@@ -1,18 +0,0 @@
+-<?php
+-
+-namespace CrossSiteLinker\Editor;
+-
+-class LinkInserter
+-{
+-    public function __construct()
+-    {
+-        add_action('enqueue_block_editor_assets', [$this, 'enqueue_assets']);
+-    }
+-
+-    public function enqueue_assets()
+-    {
+-        wp_enqueue_script(
+-            'cross-site-linker-link-inserter',
+-            CROSS_SITE_LINKER_URL . 'assets/js/link-inserter.js',
+-            ['wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data', 'wp-api-fetch', 'wp-rich-text'],
+-            '1.0.0',
+-            true
+-        );
+-    }
+-}
+diff --git a/cross-site-linker/includes/editor/Sidebar.php b/cross-site-linker/includes/editor/Sidebar.php
+deleted file mode 100644
+index 0000000..0000000
+--- a/cross-site-linker/includes/editor/Sidebar.php
++++ /dev/null
+@@ -1,23 +0,0 @@
+-<?php
+-
+-namespace CrossSiteLinker\Editor;
+-
+-class Sidebar
+-{
+-    public function __construct()
+-    {
+-        add_action('enqueue_block_editor_assets', [$this, 'enqueue_assets']);
+-    }
+-
+-    public function enqueue_assets()
+-    {
+-        wp_enqueue_script(
+-            'cross-site-linker-sidebar',
+-            CROSS_SITE_LINKER_URL . 'assets/js/sidebar.js',
+-            ['wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data', 'wp-api-fetch'],
+-            '1.0.0',
+-            true
+-        );
+-
+-        wp_localize_script('cross-site-linker-sidebar', 'crossSiteLinker', [
+-            'sites' => get_option('cross_site_linker_sites', []),
+-            'home_url' => get_home_url(),
+-        ]);
+-    }
+-}
