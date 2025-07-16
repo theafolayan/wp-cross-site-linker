@@ -1,0 +1,17 @@
+{
+    "name": "jules/cross-site-linker",
+    "description": "A plugin to cross-link posts between WordPress sites.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Jules"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "CrossSiteLinker\\": "includes/"
+        }
+    },
+    "require": {}
+}
