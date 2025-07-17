@@ -139,8 +139,15 @@ class Settings
                             alert('Connection successful!');
                             button.text('Test Connection').prop('disabled', false);
                         },
-                        error: function() {
-                            alert('Connection failed!');
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            let errorMessage = 'Connection failed!';
+                            if (errorThrown) {
+                                errorMessage += '\n' + errorThrown;
+                            }
+                            if (jqXHR.responseText) {
+                                errorMessage += '\n' + jqXHR.responseText;
+                            }
+                            alert(errorMessage);
                             button.text('Test Connection').prop('disabled', false);
                         }
                     });
