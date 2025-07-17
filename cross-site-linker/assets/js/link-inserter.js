@@ -20,9 +20,9 @@ const CrossSiteLinkInserter = ({ isActive, value, onChange }) => {
         const promises = sites
             .filter(site => site.url !== home_url)
             .map(site => {
-                let path = `${site.url}/wp-json/crosslinker/v1/posts?q=${searchTerm}`;
+                const url = `${site.url}/wp-json/crosslinker/v1/posts?q=${searchTerm}`;
                 return apiFetch({
-                    path,
+                    url,
                     headers: site.api_key ? { 'X-API-KEY': site.api_key } : {},
                 }).then(posts => {
                     return posts.map(post => ({ ...post, siteName: site.name }));
