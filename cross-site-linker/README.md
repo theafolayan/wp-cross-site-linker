@@ -1,6 +1,6 @@
 # Cross-Site Linker
 
-A WordPress plugin to cross-link posts between WordPress sites.
+A WordPress plugin to cross-link posts, pages, and glossary entries between WordPress sites.
 
 ## Why This Plugin?
 
@@ -31,7 +31,7 @@ A single site can act as both a Provider and a Consumer, allowing for a truly in
 
 *   **Public REST API Endpoint:** `GET /wp-json/crosslinker/v1/posts?q=keyword`
 *   **JSON Response:** Returns a list of matching posts with title, URL, and excerpt.
-*   **WP\_Query Powered:** Uses `WP_Query` to search post titles and excerpts.
+*   **WP\_Query Powered:** Searches posts, pages, and glossary entries via `WP_Query`.
 *   **API Key Protection:** Optionally protect the API with an API key.
 
 ### Consumer Role (Editor Features)
