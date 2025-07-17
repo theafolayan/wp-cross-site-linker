@@ -1,6 +1,7 @@
 jQuery(document).ready(function($) {
     const { sites, home_url, post_title } = crossSiteLinker;
-    const apiFetch = wp.apiFetch;
+    // Use the browser's fetch API for cross-site requests to avoid wp.apiFetch
+    // automatically prefixing the URL with the current site's domain.
     let isLoading = false;
 
     function fetchSuggestions() {
@@ -18,13 +19,14 @@ jQuery(document).ready(function($) {
             .map(site => {
                 const url = `${site.url}/wp-json/crosslinker/v1/posts?q=${keywords}`;
                 console.log(`Fetching from: ${url}`);
-                return apiFetch({
-                    url,
+                return fetch(url, {
                     headers: site.api_key ? { 'X-API-KEY': site.api_key } : {},
-                }).then(posts => {
-                    console.log(`Received ${posts.length} posts from ${site.name}`);
-                    return posts.map(post => ({ ...post, siteName: site.name }));
-                });
+                })
+                    .then(response => response.json())
+                    .then(posts => {
+                        console.log(`Received ${posts.length} posts from ${site.name}`);
+                        return posts.map(post => ({ ...post, siteName: site.name }));
+                    });
             });
 
         Promise.all(promises)

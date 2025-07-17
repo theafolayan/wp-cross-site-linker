@@ -42,7 +42,7 @@ class ClassicEditor
             'cross-site-linker-classic-editor',
             CROSS_SITE_LINKER_URL . 'assets/js/classic-editor.js',
             ['jquery', 'wp-api-fetch'],
-            '1.0.0',
+            '1.0.1',
             true
         );
 
