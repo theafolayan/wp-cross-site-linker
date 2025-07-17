@@ -41,6 +41,7 @@ A single site can act as both a Provider and a Consumer, allowing for a truly in
 *   **Merge and Rank:** Merges and ranks suggestions from all configured external sites.
 *   **Insert Links:** Easily insert links to external posts into the current post.
 *   **Contextual Link Inserter:** A modal to search for and insert links when you highlight text in the editor.
+*   **Classic Editor Integration:** Adds results from your other sites to the link dialog search when editing with the Classic Editor.
 
 ### Settings Page
 

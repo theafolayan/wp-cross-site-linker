@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Cross-Site Linker
  * Description: A plugin to cross-link posts between WordPress sites.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Jules
  */
 
