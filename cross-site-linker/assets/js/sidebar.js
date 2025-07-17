@@ -23,16 +23,19 @@ class CrossSiteLinkerSidebar extends Component {
         const { sites, home_url } = crossSiteLinker;
 
         this.setState({ isLoading: true });
+        console.log('Fetching suggestions for Gutenberg editor...');
 
         const keywords = postTitle.split(' ').slice(0, 5).join(' ');
         const promises = sites
             .filter(site => site.url !== home_url)
             .map(site => {
                 let path = `${site.url}/wp-json/crosslinker/v1/posts?q=${keywords}`;
+                console.log(`Fetching from: ${path}`);
                 return apiFetch({
                     path,
                     headers: site.api_key ? { 'X-API-KEY': site.api_key } : {},
                 }).then(posts => {
+                    console.log(`Received ${posts.length} posts from ${site.name}`);
                     return posts.map(post => ({ ...post, siteName: site.name }));
                 });
             });
@@ -40,12 +43,13 @@ class CrossSiteLinkerSidebar extends Component {
         Promise.all(promises)
             .then(results => {
                 const suggestions = [].concat(...results);
+                console.log(`Total suggestions: ${suggestions.length}`);
                 this.setState({ suggestions, isLoading: false });
             })
             .catch(error => {
-                console.error(error);
+                console.error('An error occurred while fetching suggestions:', error);
                 this.setState({ isLoading: false, suggestions: [] });
-                alert('An error occurred while fetching suggestions.');
+                alert('An error occurred while fetching suggestions. Check the console for more details.');
             });
     };
 
@@ -110,7 +114,9 @@ const applyWithSelect = withSelect(select => {
     };
 });
 
-registerPlugin('cross-site-linker', {
-    render: applyWithSelect(CrossSiteLinkerSidebar),
-    icon: 'admin-links',
+window.addEventListener('DOMContentLoaded', () => {
+    registerPlugin('cross-site-linker', {
+        render: applyWithSelect(CrossSiteLinkerSidebar),
+        icon: 'admin-links',
+    });
 });
