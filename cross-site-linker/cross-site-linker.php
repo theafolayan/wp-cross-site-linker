@@ -23,9 +23,9 @@ require_once CROSS_SITE_LINKER_PATH . 'includes/editor/ClassicEditor.php';
 
 
 // Initialize the plugin
-add_action('plugins_loaded', function () {
-    \CrossSiteLinker\Plugin::instance();
+\CrossSiteLinker\Plugin::instance();
 
+add_action('admin_init', function () {
     if (!function_exists('is_plugin_active') || !is_plugin_active('classic-editor/classic-editor.php')) {
         new \CrossSiteLinker\Editor\Sidebar();
     } else {

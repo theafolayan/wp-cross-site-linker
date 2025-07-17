@@ -24,7 +24,5 @@ class Plugin
         // Load other components
         new Api\Provider();
         new Admin\Settings();
-        new Editor\Sidebar();
-        new Editor\LinkInserter();
     }
 }

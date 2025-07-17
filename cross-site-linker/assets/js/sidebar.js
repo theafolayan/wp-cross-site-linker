@@ -114,7 +114,9 @@ const applyWithSelect = withSelect(select => {
     };
 });
 
-window.addEventListener('DOMContentLoaded', () => {
+import domReady from '@wordpress/dom-ready';
+
+domReady(() => {
     registerPlugin('cross-site-linker', {
         render: applyWithSelect(CrossSiteLinkerSidebar),
         icon: 'admin-links',
