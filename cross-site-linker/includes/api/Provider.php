@@ -34,10 +34,10 @@ class Provider
         }
 
         $args = [
-            'post_type' => 'post',
-            'post_status' => 'publish',
+            'post_type'      => ['post', 'page', 'glossary'],
+            'post_status'    => 'publish',
             'posts_per_page' => 10,
-            's' => $keyword,
+            's'             => $keyword,
         ];
 
         $query = new \WP_Query($args);

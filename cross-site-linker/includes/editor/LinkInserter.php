@@ -15,7 +15,7 @@ class LinkInserter
             'cross-site-linker-link-inserter',
             CROSS_SITE_LINKER_URL . 'assets/js/link-inserter.js',
             ['wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data', 'wp-api-fetch', 'wp-rich-text'],
-            '1.0.0',
+            '1.0.2',
             true
         );
     }

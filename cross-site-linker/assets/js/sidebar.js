@@ -3,7 +3,7 @@ const { PluginSidebar } = wp.editPost;
 const { PanelBody, Button } = wp.components;
 const { withSelect } = wp.data;
 const { Component, Fragment } = wp.element;
-const apiFetch = wp.apiFetch;
+// Use the browser's fetch API for cross-site requests
 
 class CrossSiteLinkerSidebar extends Component {
     constructor() {
@@ -31,13 +31,9 @@ class CrossSiteLinkerSidebar extends Component {
             .map(site => {
                 const url = `${site.url}/wp-json/crosslinker/v1/posts?q=${keywords}`;
                 console.log(`Fetching from: ${url}`);
-                const headers = {
-                    'Content-Type': 'application/json',
-                };
-                if (site.api_key) {
-                    headers['X-API-KEY'] = site.api_key;
-                }
-                return fetch(url, { headers })
+                return fetch(url, {
+                    headers: site.api_key ? { 'X-API-KEY': site.api_key } : {},
+                })
                     .then(response => response.json())
                     .then(posts => {
                         console.log(`Received ${posts.length} posts from ${site.name}`);

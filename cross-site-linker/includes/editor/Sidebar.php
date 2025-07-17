@@ -15,7 +15,7 @@ class Sidebar
             'cross-site-linker-sidebar',
             CROSS_SITE_LINKER_URL . 'assets/js/sidebar.js',
             ['wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data', 'wp-api-fetch', 'wp-dom-ready'],
-            '1.0.0',
+            '1.0.2',
             true
         );
 

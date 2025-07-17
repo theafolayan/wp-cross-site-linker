@@ -2,7 +2,7 @@ const { registerFormatType, toggleFormat } = wp.richText;
 const { RichTextToolbarButton } = wp.editor;
 const { Popover, Button, TextControl, Spinner } = wp.components;
 const { useState } = wp.element;
-const apiFetch = wp.apiFetch;
+// Use the browser's fetch API for cross-site requests
 
 const CrossSiteLinkInserter = ({ isActive, value, onChange }) => {
     const [isPopoverVisible, setIsPopoverVisible] = useState(false);
@@ -20,13 +20,14 @@ const CrossSiteLinkInserter = ({ isActive, value, onChange }) => {
         const promises = sites
             .filter(site => site.url !== home_url)
             .map(site => {
-                let path = `${site.url}/wp-json/crosslinker/v1/posts?q=${searchTerm}`;
-                return apiFetch({
-                    path,
+                const url = `${site.url}/wp-json/crosslinker/v1/posts?q=${searchTerm}`;
+                return fetch(url, {
                     headers: site.api_key ? { 'X-API-KEY': site.api_key } : {},
-                }).then(posts => {
-                    return posts.map(post => ({ ...post, siteName: site.name }));
-                });
+                })
+                    .then(response => response.json())
+                    .then(posts => {
+                        return posts.map(post => ({ ...post, siteName: site.name }));
+                    });
             });
 
         Promise.all(promises)
