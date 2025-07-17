@@ -1,6 +1,5 @@
 jQuery(document).ready(function($) {
     const { sites, home_url, post_title } = crossSiteLinker;
-    const apiFetch = wp.apiFetch;
     let isLoading = false;
 
     function fetchSuggestions() {
@@ -16,11 +15,15 @@ jQuery(document).ready(function($) {
         const promises = sites
             .filter(site => site.url !== home_url)
             .map(site => {
-                let url = `${site.url}/wp-json/crosslinker/v1/posts?q=${keywords}`;
+                const url = `${site.url}/wp-json/crosslinker/v1/posts?q=${keywords}`;
                 console.log(`Fetching from: ${url}`);
-                return apiFetch({
-                    url,
-                    headers: site.api_key ? { 'X-API-KEY': site.api_key } : {},
+                return $.ajax({
+                    url: url,
+                    beforeSend: function (xhr) {
+                        if (site.api_key) {
+                            xhr.setRequestHeader('X-API-KEY', site.api_key);
+                        }
+                    },
                 }).then(posts => {
                     console.log(`Received ${posts.length} posts from ${site.name}`);
                     return posts.map(post => ({ ...post, siteName: site.name }));

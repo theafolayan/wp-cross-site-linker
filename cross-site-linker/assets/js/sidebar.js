@@ -29,15 +29,20 @@ class CrossSiteLinkerSidebar extends Component {
         const promises = sites
             .filter(site => site.url !== home_url)
             .map(site => {
-                let url = `${site.url}/wp-json/crosslinker/v1/posts?q=${keywords}`;
+                const url = `${site.url}/wp-json/crosslinker/v1/posts?q=${keywords}`;
                 console.log(`Fetching from: ${url}`);
-                return apiFetch({
-                    url,
-                    headers: site.api_key ? { 'X-API-KEY': site.api_key } : {},
-                }).then(posts => {
-                    console.log(`Received ${posts.length} posts from ${site.name}`);
-                    return posts.map(post => ({ ...post, siteName: site.name }));
-                });
+                const headers = {
+                    'Content-Type': 'application/json',
+                };
+                if (site.api_key) {
+                    headers['X-API-KEY'] = site.api_key;
+                }
+                return fetch(url, { headers })
+                    .then(response => response.json())
+                    .then(posts => {
+                        console.log(`Received ${posts.length} posts from ${site.name}`);
+                        return posts.map(post => ({ ...post, siteName: site.name }));
+                    });
             });
 
         Promise.all(promises)
